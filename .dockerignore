@@ -1,0 +1,35 @@
+# Build context for the root Dockerfile (flask_app and datapull_worker images).
+# Keep secrets and local artifacts out of the image: anything copied here is readable by
+# anyone with the image, and by code running inside the container.
+
+# Secrets and certificates
+.env
+.env.*
+!.env.example
+certs/
+
+# VCS, editor and tool folders
+.git/
+.github/
+.claude/
+.vscode/
+.history/
+
+# Python environments and caches
+.venv/
+venv/
+**/__pycache__/
+**/*.py[cod]
+
+# Frontend is built into its own image from ./byoint-web
+byoint-web/
+
+# Local data dumps and scan reports
+mongo_export*.json
+*.bson
+*.bson.gz
+mongo_dump/
+zap-*
+zap.yaml
+trivy-*
+*.log

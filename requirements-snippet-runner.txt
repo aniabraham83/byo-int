@@ -1,0 +1,5 @@
+# Third-party packages custom snippets can import inside the snippet_runner container.
+# A snippet can only import a module that is both installed here and listed in the core
+# config's custom_snippets_allowed_imports. Standard-library modules (datetime, re, json, ...)
+# need no entry here. Do not add database drivers or app packages.
+requests

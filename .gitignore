@@ -1,0 +1,53 @@
+# Root gitignore for byoint prototype repo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python caches and artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+
+# Node / frontend artifacts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated Mongo exports and local database dumps
+mongo_export.json
+mongo_export*.json
+*.bson
+*.bson.gz
+*.metadata.json
+mongo_dump/
+
+# Docker artifacts
+docker-compose.override.yml
+*.log
+*.pid
+
+# Generated security scan reports
+zap-*.html
+zap-*.json
+trivy-*.txt
+trivy-*.json
+
+# VS Code
+.vscode/
+.history/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secret/key directories
+certs/
+
+# Generated frontend files
+byoint-web/dist/
+
+zap.yaml

@@ -1,0 +1,887 @@
+{
+  "collections": {
+    "byoint_core_config": {
+      "basicconfigs": [
+        {
+          "API_AUDIT_LOG_METHODS": [
+            "POST"
+          ],
+          "PUBLIC_API_ENDPOINTS": [
+            "/feeds/*",
+            "/api/indicators",
+            "/api/indicators/new"
+          ],
+          "_id": "69924f9f0c9d00700a4ccb5c",
+          "allow_custom_snippet": false,
+          "collect_log": "summary",
+          "custom_snippets_allowed_builtins": [
+            "str",
+            "len",
+            "print",
+            "repr",
+            "format",
+            "ord",
+            "chr",
+            "enumerate",
+            "range",
+            "int",
+            "float",
+            "bool",
+            "list",
+            "dict",
+            "set",
+            "tuple",
+            "min",
+            "max",
+            "sum",
+            "sorted",
+            "isinstance",
+            "type",
+            "all"
+          ],
+          "custom_snippets_allowed_imports": [
+            "requests",
+            "datetime",
+            "re"
+          ],
+          "enable_indicator_logging": true,
+          "module": "core",
+          "output_categories": [
+            "general",
+            "blocklist",
+            "allowlist"
+          ],
+          "sso": {
+            "auto_create_users": true,
+            "client_id": null,
+            "client_secret": null,
+            "discovery_url": null,
+            "enable": false,
+            "provider_name": "Single Sign-On",
+            "redirect_uri": null,
+            "scopes": "openid profile email"
+          },
+          "worker_scaling": {
+            "auto_scaling_enabled": false,
+            "desired_worker_count": 1,
+            "max_workers": 10,
+            "min_workers": 1
+          }
+        }
+      ],
+      "data_enrichments": [
+        {
+          "_id": "builtin_domain_resolve_ipv4",
+          "enrich_name": "domain_resolve_ipv4",
+          "enrich_data_type": "domain",
+          "enrich_type": "builtin",
+          "enrich_description": "Resolve a domain to its IPv4 addresses (DNS A records).",
+          "info": "Built-in enrichment 'domain_resolve_ipv4' resolves a domain indicator via DNS and stores the sorted list of IPv4 addresses. Returns null when the domain does not resolve.",
+          "enrich_mapping_function": "domain_resolve_ipv4",
+          "snippet_code": "",
+          "connector_config": null,
+          "enrich_output_fields": ["resolved_ipv4"],
+          "enabled": true
+        }
+      ],
+      "data_types": [
+        {
+          "_id": "697e94810c9d00700a4ccb3f",
+          "name": "ipv4",
+          "regex_extract_pattern": "^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+          "type": "builtin"
+        },
+        {
+          "_id": "697eb0fe0c9d00700a4ccb40",
+          "name": "domain",
+          "regex_extract_pattern": "^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+          "type": "builtin"
+        },
+        {
+          "_id": "6a038f2ebca920afb569f12e",
+          "name": "ipv6",
+          "regex_extract_pattern": "^((?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}|(?:[0-9A-Fa-f]{1,4}:){1,7}:|(?:[0-9A-Fa-f]{1,4}:){1,6}:[0-9A-Fa-f]{1,4}|(?:[0-9A-Fa-f]{1,4}:){1,5}(?::[0-9A-Fa-f]{1,4}){1,2}|(?:[0-9A-Fa-f]{1,4}:){1,4}(?::[0-9A-Fa-f]{1,4}){1,3}|(?:[0-9A-Fa-f]{1,3})(?::[0-9A-Fa-f]{1,4}){1,4}|(?:[0-9A-Fa-f]{1,2})(?::[0-9A-Fa-f]{1,4}){1,5}|[0-9A-Fa-f]{1,4}:(?:(?::[0-9A-Fa-f]{1,4}){1,6})|:(?:(?::[0-9A-Fa-f]{1,4}){1,7}|:)|(?:[0-9A-Fa-f]{1,4}:){6}(?:\\d{1,3}\\.){3}\\d{1,3}|(?:[0-9A-Fa-f]{1,4}:){1,5}:(?:\\d{1,3}\\.){3}\\d{1,3})$",
+          "type": "builtin"
+        },
+        {
+          "_id": "6a0390f3bca920afb569f136",
+          "name": "url",
+          "regex_extract_pattern": "^(https?:\\/\\/)(localhost|(([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,})|(\\d{1,3}(\\.\\d{1,3}){3})|(\\[[0-9A-Fa-f:]+\\]))(:\\d{1,5})?(\\/[^\\s]*)?$",
+          "type": "builtin"
+        },
+        {
+          "_id": "6a039182bca920afb569f147",
+          "name": "sha256",
+          "regex_extract_pattern": "^[a-fA-F0-9]{64}$",
+          "type": "builtin"
+        },
+        {
+          "_id": "6a0c1e4fbca920afb569f150",
+          "name": "hostname",
+          "regex_extract_pattern": "^(?=.{1,253}$)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)*(?=[a-zA-Z0-9-]*[a-zA-Z])[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$",
+          "type": "builtin"
+        }
+      ],
+      "integration_capabilities": [
+        {
+          "_id": "cap_generic_url_text",
+          "product": "Plain-text threat feeds",
+          "vendor": null,
+          "category": "Threat feed",
+          "method": "builtin",
+          "template_name": "generic_url_text",
+          "capability": "One indicator per line from any HTTP(S) URL",
+          "data_types": [
+            "ipv4",
+            "domain",
+            "url"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_api_with_key",
+          "product": "REST API (API key header)",
+          "vendor": null,
+          "category": "REST API",
+          "method": "builtin",
+          "template_name": "api_with_key",
+          "capability": "JSON API responses, X-API-Key or Authorization header",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_api_basicauth",
+          "product": "REST API (Basic auth)",
+          "vendor": null,
+          "category": "REST API",
+          "method": "builtin",
+          "template_name": "api_basicauth",
+          "capability": "JSON API responses with HTTP Basic auth",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_api_bearer",
+          "product": "REST API (Bearer token)",
+          "vendor": null,
+          "category": "REST API",
+          "method": "builtin",
+          "template_name": "api_bearer",
+          "capability": "JSON API responses with Bearer token",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "untested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_mcp_tool",
+          "product": "MCP server tool",
+          "vendor": null,
+          "category": "MCP",
+          "method": "builtin",
+          "template_name": "mcp_tool",
+          "capability": "Call an MCP tool over Streamable HTTP and extract indicators from the result",
+          "data_types": [
+            "ipv4",
+            "domain",
+            "url"
+          ],
+          "tested_version": null,
+          "status": "untested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_mysql",
+          "product": "MySQL / MariaDB",
+          "vendor": "Oracle / MariaDB Foundation",
+          "category": "Database",
+          "method": "builtin",
+          "template_name": "basic_mysql_query",
+          "capability": "SQL query rows → indicators",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "partial",
+          "tested_by": null,
+          "notes": "Re-test recommended: the most recent run failed.",
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_mssql",
+          "product": "Microsoft SQL Server",
+          "vendor": "Microsoft",
+          "category": "Database",
+          "method": "builtin",
+          "template_name": "basic_mssql_query",
+          "capability": "SQL query rows → indicators",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_oracle",
+          "product": "Oracle Database",
+          "vendor": "Oracle",
+          "category": "Database",
+          "method": "builtin",
+          "template_name": "basic_oracledb_query",
+          "capability": "SQL query rows → indicators",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_postgresql",
+          "product": "PostgreSQL",
+          "vendor": "PostgreSQL Global Development Group",
+          "category": "Database",
+          "method": "builtin",
+          "template_name": "basic_postgresql_query",
+          "capability": "SQL query rows → indicators",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_mongodb",
+          "product": "MongoDB",
+          "vendor": "MongoDB Inc.",
+          "category": "Database",
+          "method": "builtin",
+          "template_name": "basic_mongodb_query",
+          "capability": "find() query documents → indicators",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_ldap",
+          "product": "Active Directory / LDAP",
+          "vendor": "Microsoft / OpenLDAP",
+          "category": "Directory",
+          "method": "builtin",
+          "template_name": "basic_ldap_search",
+          "capability": "Paged LDAP search of selected attributes (e.g. computer dNSHostName)",
+          "data_types": [
+            "hostname",
+            "domain"
+          ],
+          "tested_version": null,
+          "status": "partial",
+          "tested_by": null,
+          "notes": "Unit-tested against the ldap3 mock server only; not yet validated against a live domain controller.",
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_url_fetch_ip",
+          "product": "URL fetch (custom snippet)",
+          "vendor": null,
+          "category": "Custom",
+          "method": "custom_snippet",
+          "template_name": "url_fetch_ip",
+          "capability": "Custom Python snippet fetching IPs from a URL",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "tested",
+          "tested_by": null,
+          "notes": null,
+          "snippet_example": null,
+          "reference_url": null
+        },
+        {
+          "_id": "cap_feodo_tracker",
+          "product": "Feodo Tracker IP blocklist",
+          "vendor": "abuse.ch",
+          "category": "Threat feed",
+          "method": "custom_snippet",
+          "template_name": null,
+          "capability": "Botnet C2 IPs; snippet skips # comment lines",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "partial",
+          "tested_by": null,
+          "notes": "Snippet dry-run against the live feed returned valid ipv4 values (5 IPs) under the snippet sandbox restrictions; not yet run as a workflow. Create a Custom template with this snippet (optional ufield arg: feed_url).",
+          "snippet_example": "import requests\n\ntarget_url = template_args.get('feed_url') or 'https://feodotracker.abuse.ch/downloads/ipblocklist.txt'\nresponse = requests.get(target_url, timeout=30)\nresponse.raise_for_status()\n\nresult_list = []\nfor line in response.text.splitlines():\n    value = line.strip()\n    if value and not value.startswith('#'):\n        result_list.append({'value': value, 'dtype': 'ipv4'})",
+          "reference_url": "https://feodotracker.abuse.ch/blocklist/"
+        },
+        {
+          "_id": "cap_otx",
+          "product": "AlienVault OTX subscribed pulses",
+          "vendor": "LevelBlue (AT&T Cybersecurity)",
+          "category": "Threat intel platform",
+          "method": "custom_snippet",
+          "template_name": null,
+          "capability": "Indicators from subscribed pulses; needs the X-OTX-API-KEY header, which api_with_key cannot send",
+          "data_types": [
+            "ipv4",
+            "domain",
+            "hostname",
+            "url",
+            "sha256"
+          ],
+          "tested_version": null,
+          "status": "untested",
+          "tested_by": null,
+          "notes": "Requires a free OTX API key stored in Secrets (ufield arg: otx_api_key_secret_ref).",
+          "snippet_example": "import requests\n\n# ufield_args: otx_api_key_secret_ref (resolved at runtime to `otx_api_key`)\nheaders = {'X-OTX-API-KEY': otx_api_key}\ntype_map = {'IPv4': 'ipv4', 'domain': 'domain', 'hostname': 'hostname', 'URL': 'url', 'FileHash-SHA256': 'sha256'}\nnext_url = 'https://otx.alienvault.com/api/v1/pulses/subscribed?limit=50'\n\nresult_list = []\npages = 0\nwhile next_url and pages < 20:\n    response = requests.get(next_url, headers=headers, timeout=30)\n    response.raise_for_status()\n    body = response.json()\n    for pulse in body.get('results', []):\n        for ioc in pulse.get('indicators', []):\n            dtype = type_map.get(ioc.get('type'))\n            if dtype:\n                result_list.append({'value': ioc.get('indicator'), 'dtype': dtype})\n    next_url = body.get('next')\n    pages += 1",
+          "reference_url": "https://otx.alienvault.com/api"
+        },
+        {
+          "_id": "cap_threatfox",
+          "product": "ThreatFox IOCs",
+          "vendor": "abuse.ch",
+          "category": "Threat intel platform",
+          "method": "custom_snippet",
+          "template_name": null,
+          "capability": "Last 24h IOCs via POST JSON API; ip:port values are split to the IP",
+          "data_types": [
+            "ipv4",
+            "domain",
+            "url",
+            "sha256"
+          ],
+          "tested_version": null,
+          "status": "untested",
+          "tested_by": null,
+          "notes": "Requires an abuse.ch Auth-Key stored in Secrets (ufield arg: threatfox_auth_key_secret_ref).",
+          "snippet_example": "import requests\n\n# ufield_args: threatfox_auth_key_secret_ref (resolved at runtime to `threatfox_auth_key`)\nresponse = requests.post(\n    'https://threatfox-api.abuse.ch/api/v1/',\n    json={'query': 'get_iocs', 'days': 1},\n    headers={'Auth-Key': threatfox_auth_key},\n    timeout=30,\n)\nresponse.raise_for_status()\ndata = response.json().get('data')\nif not isinstance(data, list):\n    data = []\n\nresult_list = []\nfor ioc in data:\n    value = str(ioc.get('ioc') or '')\n    ioc_type = ioc.get('ioc_type')\n    if ioc_type == 'ip:port':\n        result_list.append({'value': value.split(':')[0], 'dtype': 'ipv4'})\n    elif ioc_type == 'domain':\n        result_list.append({'value': value, 'dtype': 'domain'})\n    elif ioc_type == 'url':\n        result_list.append({'value': value, 'dtype': 'url'})\n    elif ioc_type == 'sha256_hash':\n        result_list.append({'value': value, 'dtype': 'sha256'})",
+          "reference_url": "https://threatfox.abuse.ch/api/"
+        },
+        {
+          "_id": "cap_tor_exits",
+          "product": "Tor exit node list",
+          "vendor": "The Tor Project",
+          "category": "Threat feed",
+          "method": "builtin",
+          "template_name": null,
+          "capability": "Plain-text list of current Tor exit IPs",
+          "data_types": [
+            "ipv4"
+          ],
+          "tested_version": null,
+          "status": "untested",
+          "tested_by": null,
+          "notes": "Use generic_url_text with https://check.torproject.org/torbulkexitlist.",
+          "snippet_example": null,
+          "reference_url": "https://check.torproject.org/torbulkexitlist"
+        },
+        {
+          "_id": "cap_spamhaus_drop",
+          "product": "Spamhaus DROP",
+          "vendor": "Spamhaus",
+          "category": "Threat feed",
+          "method": "custom_snippet",
+          "template_name": null,
+          "capability": "Netblocks in CIDR notation",
+          "data_types": [
+            "cidr"
+          ],
+          "tested_version": null,
+          "status": "unsupported",
+          "tested_by": null,
+          "notes": "Not supported yet: there is no CIDR data type, and the ipv4 regex rejects values like 1.2.3.0/24.",
+          "snippet_example": null,
+          "reference_url": "https://www.spamhaus.org/blocklists/do-not-route-or-peer/"
+        }
+      ],
+      "datapull_secrets": [],
+      "datapull_templates": [
+        {
+          "_id": "6977ecbc9ec792d05b6b263a",
+          "description": "Generic URL Text",
+          "function_mapping": "url_scraper_v1",
+          "info": "Built-in template 'generic_url_text' extracts Indicators from a weburl. This is primarily designed for feed type urls where each indicator is specificed per line.\nAs an example- \nhttps://rules.emergingthreats.net/blockrules/compromised-ips.txt\n101.96.200.56\n102.210.82.20\n103.147.14.125\n103.210.22.17\n103.24.212.42\n\nEach line will be fetched and added as an Indicator. ",
+          "template_name": "generic_url_text",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "url_to_extract",
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "_id": "69a79ef62b52bedfe611d2e4",
+          "description": "API request with bearer Token",
+          "function_mapping": "apirequest_bearer_v1",
+          "info": "Built-in template 'api_bearer' uses the server-side datapull function 'apirequest_bearer_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "api_bearer",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "api_url",
+              "mandatory": true
+            },
+            {
+              "field_name": "bearer_token_secret_ref",
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "_id": "69a9ffe83f75f456d4de884c",
+          "description": "API request with Authorization Key",
+          "function_mapping": "apirequest_key_v1",
+          "info": "Built-in template 'api_with_key' uses the server-side datapull function 'apirequest_key_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "api_with_key",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "api_url",
+              "mandatory": "true"
+            },
+            {
+              "field_name": "api_key_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "verify_ssl",
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "_id": "6a03ac7d2768a6fc176bcfcd",
+          "description": "Built-in MySQL/MariaDB query datapull",
+          "function_mapping": "mysql_query_v1",
+          "info": "Built-in template 'basic_mysql_query' uses the server-side datapull function 'mysql_query_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "basic_mysql_query",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "db_host",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_port",
+              "mandatory": false
+            },
+            {
+              "field_name": "db_name",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_user",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_password_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_query",
+              "mandatory": true
+            },
+            {
+              "field_name": "query_params",
+              "mandatory": false
+            },
+            {
+              "field_name": "timeout",
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "_id": "6a052fda4516750089d959cf",
+          "description": "Built-in MS-SQL query datapull",
+          "function_mapping": "mssql_query_v1",
+          "info": "Built-in template 'basic_mssql_query' uses the server-side datapull function 'mssql_query_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "basic_mssql_query",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "db_host",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_port",
+              "mandatory": false
+            },
+            {
+              "field_name": "db_name",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_user",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_password_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_query",
+              "mandatory": true
+            },
+            {
+              "field_name": "query_params",
+              "mandatory": false
+            },
+            {
+              "field_name": "timeout",
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "_id": "6a068d5186bfca139734cd82",
+          "description": "Built-in OracleDB query datapull",
+          "function_mapping": "oracle_query_v1",
+          "info": "Built-in template 'basic_oracledb_query' uses the server-side datapull function 'oracle_query_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "basic_oracledb_query",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "db_host",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_port",
+              "mandatory": false
+            },
+            {
+              "field_name": "db_name",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_user",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_password_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_query",
+              "mandatory": true
+            },
+            {
+              "field_name": "query_params",
+              "mandatory": false
+            },
+            {
+              "field_name": "timeout",
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "_id": "6a0788dc0656338e2de4b3ee",
+          "description": "Built-in PostGreSQL query datapull",
+          "function_mapping": "postgresql_query_v1",
+          "info": "Built-in template 'basic_postgresql_query' uses the server-side datapull function 'postgresql_query_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "basic_postgresql_query",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "db_host",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_port",
+              "mandatory": false
+            },
+            {
+              "field_name": "db_name",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_user",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_password_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_query",
+              "mandatory": true
+            },
+            {
+              "field_name": "query_params",
+              "mandatory": false
+            },
+            {
+              "field_name": "timeout",
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "_id": "6a079d4d0656338e2de4b3f4",
+          "description": "Built-in MongoDB query datapull",
+          "function_mapping": "mongodb_query_v1",
+          "info": "Built-in template 'basic_mongodb_query' uses the server-side datapull function 'mongodb_query_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "basic_mongodb_query",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "db_host",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_port",
+              "mandatory": false
+            },
+            {
+              "field_name": "db_name",
+              "mandatory": true
+            },
+            {
+              "field_name": "auth_source",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_collection",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_user",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_password_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "db_query",
+              "mandatory": true
+            },
+            {
+              "field_name": "projection",
+              "mandatory": false
+            },
+            {
+              "field_name": "query_params",
+              "mandatory": false
+            },
+            {
+              "field_name": "timeout",
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "_id": "6a0917600656338e2de4b40a",
+          "description": "API request with Basic Auth",
+          "function_mapping": "apirequest_basic_auth_v1",
+          "info": "Built-in template 'api_basicauth' uses the server-side datapull function 'apirequest_basic_auth_v1' to extract indicators from the source content and write them to the indicator store.",
+          "template_name": "api_basicauth",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "api_url",
+              "mandatory": "true"
+            },
+            {
+              "field_name": "username",
+              "mandatory": true
+            },
+            {
+              "field_name": "password_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "verify_ssl",
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "_id": "6a1b2c3d4e5f60718293a4b5",
+          "description": "MCP server tool call",
+          "function_mapping": "mcp_tool_call_v1",
+          "info": "Built-in template 'mcp_tool' connects to an MCP server over Streamable HTTP, calls the named tool with the given JSON arguments, and extracts indicators from the tool result (structuredContent, JSON text, or free text) into the indicator store.\nExample:\nMcp Url: https://mcp.example.com/mcp\nTool Name: get_blocklist\nTool Arguments: {\"limit\": 500}\nAuth Token Secret Ref: optional bearer token stored in Secrets.",
+          "template_name": "mcp_tool",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "mcp_url",
+              "mandatory": true,
+              "description": "https://mcp.example.com/mcp"
+            },
+            {
+              "field_name": "tool_name",
+              "mandatory": true,
+              "description": "e.g., get_blocklist"
+            },
+            {
+              "field_name": "tool_arguments",
+              "mandatory": false,
+              "description": "JSON object, e.g., {\"limit\": 500}"
+            },
+            {
+              "field_name": "auth_token_secret_ref",
+              "mandatory": false
+            },
+            {
+              "field_name": "verify_ssl",
+              "mandatory": true
+            },
+            {
+              "field_name": "timeout",
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "_id": "6a0c1e4fbca920afb569f151",
+          "description": "Built-in Active Directory / LDAP search datapull",
+          "function_mapping": "ldap_search_v1",
+          "info": "Built-in template 'basic_ldap_search' binds to an Active Directory / LDAP server, runs a paged search, and extracts indicators from the requested attributes into the indicator store. Binary attributes (objectSid, objectGUID) are skipped.\nExample (AD computers -> hostname data type):\nLdap Server: ldaps://dc01.corp.local:636\nBind Dn: CN=svc-byoint,OU=Service Accounts,DC=corp,DC=local\nBind Password Secret Ref: service account password stored in Secrets\nBase Dn: DC=corp,DC=local\nSearch Filter: (&(objectClass=computer)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))\nAttributes: dNSHostName\nUse ldaps:// (636) or Start TLS on ldap:// (389); plain LDAP sends the bind password in cleartext.",
+          "template_name": "basic_ldap_search",
+          "template_type": "builtin",
+          "ufield_args": [
+            {
+              "field_name": "ldap_server",
+              "mandatory": true,
+              "description": "ldaps://dc01.corp.local:636"
+            },
+            {
+              "field_name": "bind_dn",
+              "mandatory": true,
+              "description": "CN=svc-byoint,OU=Service Accounts,DC=corp,DC=local or svc-byoint@corp.local"
+            },
+            {
+              "field_name": "bind_password_secret_ref",
+              "mandatory": true
+            },
+            {
+              "field_name": "base_dn",
+              "mandatory": true,
+              "description": "DC=corp,DC=local"
+            },
+            {
+              "field_name": "search_filter",
+              "mandatory": true,
+              "description": "(objectClass=computer)"
+            },
+            {
+              "field_name": "attributes",
+              "mandatory": true,
+              "description": "Comma-separated, e.g. dNSHostName,cn"
+            },
+            {
+              "field_name": "search_scope",
+              "mandatory": false,
+              "description": "SUBTREE (default), LEVEL or BASE"
+            },
+            {
+              "field_name": "start_tls",
+              "mandatory": false,
+              "description": "Upgrade ldap:// connections with StartTLS (ignored for ldaps://)"
+            },
+            {
+              "field_name": "verify_ssl",
+              "mandatory": true
+            },
+            {
+              "field_name": "page_size",
+              "mandatory": false,
+              "description": "1000 (AD default MaxPageSize)"
+            },
+            {
+              "field_name": "timeout",
+              "mandatory": false
+            }
+          ]
+        }
+      ],
+      "output_guardrails": [
+        {
+          "_id": "6a00d76dd721aa422cc4ed4b",
+          "action": "disallow",
+          "description": "prevent trusted IPs from getting into Blocklist",
+          "output_category": "Blocklist",
+          "tag": "trusted",
+          "type": "builtin"
+        }
+      ],
+      "tags": [
+        {
+          "_id": "69e170486fa942e0e20ac31a",
+          "description": "trusted entities(primarily for IP Addresses)",
+          "name": "trusted",
+          "type": "builtin"
+        }
+      ]
+    },
+    "byoint_core_data": {
+      "api_audit_logs": [],
+      "apikeys": [],
+      "browser_sessions": [],
+      "datapull_workflows": [],
+      "indicators": [],
+      "outputs": [],
+      "users": []
+    },
+    "byoint_opslogs": {
+      "datapull_executions": [],
+      "datapull_jobs": [],
+      "datapull_metrics": [],
+      "indicator_activity_logs": [],
+      "indicator_logs": [],
+      "platform_change_logs": [],
+      "scheduler_logs": []
+    }
+  }
+}

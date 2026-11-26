@@ -1,0 +1,133 @@
+name: byoint
+
+# Networks keep custom snippets away from the data stores:
+#   data_net    - mongo, redis, and the app containers that use them
+#   web_net     - the web frontend (nginx) and the API it proxies to
+#   snippet_net - the app containers and the isolated snippet_runner (no route to mongo/redis)
+networks:
+  data_net:
+  web_net:
+  snippet_net:
+
+services:
+  mongo:
+    image: mongo:8.2.3
+    # Bound to loopback only so Mongo is reachable from this host (e.g. scripts/mongo_export.py)
+    # but not from the network. The app containers reach it via the internal "mongo" hostname.
+    ports:
+      - "127.0.0.1:27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    networks: [data_net]
+
+  flask_app:
+    build: .
+    working_dir: /app/byoint_core
+    environment:
+      - MONGO_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - DATAPULL_SECRET_MASTER_KEY=${DATAPULL_SECRET_MASTER_KEY}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:?Set FLASK_SECRET_KEY in .env}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATAPULL_QUEUE_SOCKET_TIMEOUT_SECONDS=10
+      - DATAPULL_QUEUE_WORKER_ENABLED=false
+      - FEED_CACHE_TTL_SECONDS=120
+      - FEED_CACHE_REFRESH_MINUTES=5
+      - MONGO_INIT_WORKFLOW=${MONGO_INIT_WORKFLOW:-none}
+      - MONGO_INIT_FILE=${MONGO_INIT_FILE:-mongo_init.json}
+      - MONGO_INIT_FORCE_REAPPLY=${MONGO_INIT_FORCE_REAPPLY:-false}
+      - BYOINT_ADMIN_PASSWORD=${BYOINT_ADMIN_PASSWORD}
+      - SNIPPET_RUNNER_URL=http://snippet_runner:8080
+      - SNIPPET_RUNNER_TOKEN=${SNIPPET_RUNNER_TOKEN:?Set SNIPPET_RUNNER_TOKEN in .env}
+      - SNIPPET_TEMPLATE_TIMEOUT_SECONDS=${SNIPPET_TEMPLATE_TIMEOUT_SECONDS:-120}
+      - SNIPPET_ENRICHMENT_TIMEOUT_SECONDS=${SNIPPET_ENRICHMENT_TIMEOUT_SECONDS:-15}
+    depends_on:
+      - mongo
+      - redis
+      - snippet_runner
+    networks: [data_net, web_net, snippet_net]
+
+  datapull_worker:
+    build: .
+    working_dir: /app/byoint_core
+    command: ["python", "queue_worker.py"]
+    # The worker serves no HTTP, so check its Redis heartbeat instead of the image's API check.
+    healthcheck:
+      test: ["CMD", "python", "worker_healthcheck.py"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    environment:
+      - MONGO_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - DATAPULL_SECRET_MASTER_KEY=${DATAPULL_SECRET_MASTER_KEY}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:?Set FLASK_SECRET_KEY in .env}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATAPULL_QUEUE_SOCKET_TIMEOUT_SECONDS=10
+      - DATAPULL_QUEUE_WORKER_ENABLED=true
+      - SNIPPET_RUNNER_URL=http://snippet_runner:8080
+      - SNIPPET_RUNNER_TOKEN=${SNIPPET_RUNNER_TOKEN:?Set SNIPPET_RUNNER_TOKEN in .env}
+      - SNIPPET_TEMPLATE_TIMEOUT_SECONDS=${SNIPPET_TEMPLATE_TIMEOUT_SECONDS:-120}
+      - SNIPPET_ENRICHMENT_TIMEOUT_SECONDS=${SNIPPET_ENRICHMENT_TIMEOUT_SECONDS:-15}
+    depends_on:
+      - mongo
+      - redis
+      - snippet_runner
+    networks: [data_net, snippet_net]
+
+  # Runs custom snippets in isolation: no app secrets, read-only filesystem, no route to
+  # mongo/redis, dropped capabilities, and capped CPU, memory and process count.
+  snippet_runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.snippet-runner
+    environment:
+      - SNIPPET_RUNNER_TOKEN=${SNIPPET_RUNNER_TOKEN:?Set SNIPPET_RUNNER_TOKEN in .env}
+      - SNIPPET_MAX_MEMORY_MB=${SNIPPET_MAX_MEMORY_MB:-512}
+      - SNIPPET_RUNNER_MAX_CONCURRENCY=${SNIPPET_RUNNER_MAX_CONCURRENCY:-4}
+      - SNIPPET_RUNNER_MAX_TIMEOUT_SECONDS=300
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 2g
+    cpus: 1.0
+    restart: unless-stopped
+    networks: [snippet_net]
+
+  redis:
+    image: redis:7-alpine
+    networks: [data_net]
+
+  vue_app:
+    build:
+      context: ./byoint-web
+    ports:
+      - "443:8443"
+    environment:
+      - NODE_ENV=production
+      - TLS_MOUNT_DIR=/certs
+      - TLS_CERT_FILE=${TLS_CERT_FILE:-tls.crt}
+      - TLS_KEY_FILE=${TLS_KEY_FILE:-tls.key}
+    volumes:
+      - ./certs:/certs:ro
+    depends_on:
+      - flask_app
+    networks: [web_net]
+
+volumes:
+  mongo-data:
+    name: prototyping_mongo-data
